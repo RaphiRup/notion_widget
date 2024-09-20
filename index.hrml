@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<link rel="shortcut icon" type="x-icon" href="Icon Mail.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mail Creator</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+
+    <style>
+        body {
+			
+            font-family: 'Poppins', sans-serif;
+            margin: 20px;
+			background-color: #363636; /* Dunkler Hintergrund */
+            color: white; /* Weiße Schriftfarbe */
+			
+		}
+		.column {
+			column-count: 2;
+		}
+		
+	    /* Stil für den Kopieren-Button */
+		#copyButton {
+        background-color: #06E6D1; /* Hintergrundfarbe */
+        color: white; /* Weiße Schriftfarbe */
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px; /* Runde Ecken */
+        cursor: pointer; /* Zeiger ändert sich zu einer Hand */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Leichter Schatten */
+        transition: background-color 0.3s, transform 0.2s; /* Sanfte Übergänge */
+        }
+		
+		/* Wrapper-Div für den 20% Einzug */
+        .wrapper {
+            margin-left: 22%; /* Einzug von der linken Seite */
+            padding: 20px; /* Innenabstand für etwas Platz */
+			max-width: 52%;
+        }
+
+
+        #copyButton:hover {
+            background-color: #04c9b7; /* Dunklere Hintergrundfarbe bei Hover */
+            transform: scale(1.05); /* Vergrößerungseffekt bei Hover */
+        }
+
+        #copyButton:active {
+            background-color: #03a394; /* Noch dunklere Hintergrundfarbe beim Drücken */
+            transform: scale(1); /* Keine Vergrößerung mehr */
+        }
+		
+        /* Stil für das Popup */
+        #copyPopup {
+            display: none; /* Versteckt das Popup initial */
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50; /* Grüne Hintergrundfarbe */
+            color: white; /* Weiße Schriftfarbe */
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000; /* Damit das Popup über anderen Elementen liegt */
+        }
+		/* Stil für die Eingabefelder */
+        textarea {
+            width: 100%;
+			height; 200px;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif; /* Poppins-Schriftart */
+            background-color: #1e1e1e; /* Dunkleres Grau für Eingabefelder */
+            color: white; /* Weiße Schriftfarbe für Eingabefelder */
+            border: 2px solid #333; /* Dunkelgraue Umrandung */
+        }
+		input {
+            width: 30%;
+            padding: 10px;
+            margin: 8px 0;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif; /* Poppins-Schriftart */
+            background-color: #1e1e1e; /* Dunkleres Grau für Eingabefelder */
+            color: white; /* Weiße Schriftfarbe für Eingabefelder */
+            border: 2px solid #333; /* Dunkelgraue Umrandung */
+        }
+		
+		.row {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            margin-bottom: 14px; /* Abstand nach unten */
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif; /* Poppins-Schriftart */
+            background-color: #1e1e1e; /* Dunkleres Grau für Eingabefelder */
+            color: white; /* Weiße Schriftfarbe für Eingabefelder */
+            border: 2px solid #333; /* Dunkelgraue Umrandung */
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: #bbb; /* Hellgraue Platzhalterfarbe */
+        }
+
+        label {
+            color: white; /* Weiße Schriftfarbe für Labels */
+			display: block; /* Label als Block-Element */
+			margin-top: 10px; /* Abstand nach oben */
+			margin-bottom: 5px; /* Abstand nach unten */
+			text-align: left; /* Links ausgerichteter Text */
+        }
+		
+		.labelrow {
+            color: white; /* Weiße Schriftfarbe für Labels */
+			display: block; /* Label als Block-Element */
+			margin-top: 0px; /* Abstand nach oben */
+			margin-bottom: 4px; /* Abstand nach unten */
+			text-align: left; /* Links ausgerichteter Text */
+        }
+
+        /* Verschiebe das Nameingabefeld leicht nach rechts */
+        #nameInput {
+            margin-left: 0px; /* Verschiebt das Eingabefeld leicht nach rechts */
+		
+		}
+		select {
+			-moz-appearance: none;
+			-webkit-appearance: none;
+			appearance: none;
+			border: none;
+			border-radius: 4px;
+			margin-top: 6px;
+			margin-left: 2px;
+			width: 100%;
+			height: 40px;
+			-moz-padding-start: calc(10px - 3px);
+			padding-left: 10px;
+			padding-top: 10px;
+			padding-bottom: 34px;
+			background-color: #1e1e1e;
+			color: #fff;
+			font-family: 'Poppins', sans-serif;
+			font-size: 16px;
+		}	
+</style>
+<script>
+        function updateText() {
+            // Hole den Wert des Namensfeldes
+            const inputName = document.getElementById('nameInput').value;
+			const inputOrt = document.getElementById('ortInput').value;
+			const inputAng = document.getElementById('angInput').value;
+			const inputAnggr = document.getElementById('anggrInput').value;
+			const inputManager = document.getElementById('managerInput').value;
+            
+            // Hole den Wert des Textfeldes
+            const inputText = document.getElementById('textInput').value;
+            
+            // Ersetze 'X' durch den eingegebenen Namen im Text
+            const newText = inputText.replace(/-name-/g, inputName).replace(/-ort-/g, inputOrt).replace(/-angebot-/g, inputAng).replace(/-angebot gr-/g, inputAnggr).replace(/-manager-/g, inputManager);
+			
+            
+            // Setze den neuen Text in den Absatz ein
+            document.getElementById('result').innerText = newText;
+        }
+		
+
+        function copyText() {
+            // Hole den Text aus dem Ergebnis-Absatz
+            const textToCopy = document.getElementById('result').innerText;
+            
+            // Erstelle ein temporäres Textfeld
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+
+            // Selektiere den Text im Textfeld
+            tempTextArea.select();
+            tempTextArea.setSelectionRange(0, 99999); // Für mobile Geräte
+
+            // Kopiere den Text in die Zwischenablage
+            document.execCommand('copy');
+
+            // Entferne das temporäre Textfeld
+            document.body.removeChild(tempTextArea);
+
+            // Zeige das Popup an
+            showPopup();
+        }
+
+        function showPopup() {
+            const popup = document.getElementById('copyPopup');
+            popup.style.display = 'block';
+            
+            // Verstecke das Popup nach 3 Sekunden
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Füge Event-Listener für die Live-Aktualisierung hinzu
+            document.getElementById('nameInput').addEventListener('input', updateText);
+			document.getElementById('ortInput').addEventListener('input', updateText);
+			document.getElementById('angInput').addEventListener('input', updateText);
+			document.getElementById('anggrInput').addEventListener('input', updateText);
+			document.getElementById('managerInput').addEventListener('input', updateText);
+			document.getElementById('textInput').addEventListener('input', updateText);
+			
+
+        });
+		
+    </script>
+</head>
+<body>
+	<div class="wrapper">
+	<h1>Athena Productions Mail Creator</h1>
+	<p>Tags: -name-, -ort-, -angebot-, -angebot gr-, -manager-</p>
+    
+
+	
+	<div class="column">
+	<label class="labelrow" for="nameInput">Name:</label>
+	<input class="row" type="text" id="nameInput" placeholder="Name eingeben">
+	
+	<label class="labelrow" for="ortInput">Ort:</label>
+	<input class="row" type="text" id="ortInput" placeholder="Ort eingeben">
+	</div>
+	
+	<div class="column">
+	<label class="labelrow" for="angebotInput">Als große ... Fans (Angebot):</label>
+	<input class="row" type="text" id="angInput" placeholder="Angebot eingeben">
+	
+	<label class="labelrow" for="AnggrInput">Auf der Suche nach... (Gr. Angebot):</label>
+	<input class="row" type="text" id="anggrInput" placeholder="Gr. Angebot eingeben">
+	</div>
+	
+
+	<label for="manager">Manager:</label>
+	<select name="manager" id="managerInput">
+		<option value="Raphael Unterreiner">Raphael Unterreiner</option>
+		<option value="Raphael Ruppert">Raphael Ruppert</option>
+	</select> 
+
+	<h2>Mail:</h2>
+	<p id="result"></p>
+	<br><br>
+
+	<label for="textInput">Vorlage:</label>
+	<textarea id="textInput" placeholder="Geben Sie hier Ihren Text ein. Beispiel: 'Hallo Lieber Herr -name-, ich hoffe es geht Ihnen gut.'" rows="10" cols="50">Sehr geehrte Damen und Herren, 
+
+als große -angebot- Fans waren wir kürzlich auf der Suche nach -angebot gr- in -ort- und sind dabei auf Ihre Website gestoßen. Nachdem das in unserer Natur liegt, habe ich dann auch auf Instagram nach Ihnen gesucht und gemerkt, dass Sie Ihr Potential einer Online-Präsenz nicht vollständig ausschöpfen. 
+
+Dementsprechend würde ich Ihnen gerne ein Angebot zur Zusammenarbeit vorschlagen, von dem ich wirklich glaube, das könnte genau das Richtige für -name- sein.
+Wir sind eine junge Agentur, die sich auf Social-Media-Marketing für Kundengewinnung und Unternehmenspräsentation spezialisiert hat, und wären dementsprechend genau das, was Sie brauchen könnten. Wir arbeiten Konzepte zur Kundenbindung und Kundengewinnung aus, bauen eine nachhaltige Social-Media-Präsenz auf und überlegen uns Wege, genau Ihre Zielgruppe effizient anzusprechen. 
+
+Wir bieten verschiedene Modelle an, die entweder monatlich gekündigt werden können, oder, wenn man ein bisschen Geld sparen möchte, eine sechsmonatige Laufzeit haben. Inbegriffen sind je nach Modell die monatliche Erstellung von Post-Designs, die Planung und den Schnitt von Videos, die primär der Vorstellung Ihres Unternehmens dienen sollen, die Planung und Durchführung von Community-Events auf Social-Media, oder auch Full-Service Account Management, mit dem Sie Social-Media-Marketing nahezu vollständig uns überlassen können.
+
+Wären Sie an einer Zusammenarbeit interessiert? Wenn ja, werde ich Sie in der nächsten E-Mail ein wenig mehr über unsere Modelle aufklären.
+
+Bei Fragen stehe ich Ihnen jederzeit zur Verfügung, nach Vereinbarung gerne auch telefonisch.
+
+Ich wünsche einen guten Start in die Woche und viele Grüße
+-manager-</textarea>
+	<br><br>
+	
+	<button id="copyButton" onclick="copyText()">Kopieren</button>
+
+	<!-- Popup-Element für die Kopierbestätigung -->
+	<div id="copyPopup">Text wurde kopiert!</div>
+	<br>
+
+
+
+	
+	
+	</div>
+</body>
+
+</html>
